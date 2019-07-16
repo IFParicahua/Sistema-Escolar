@@ -15,4 +15,5 @@ Route::get('/', function () {
     return view('index');
 });
 
-Route::get('/login','LoginController@login');
+Route::get('/rec/{id}','LoginController@rec');
+Route::get('/login','LoginController@view');

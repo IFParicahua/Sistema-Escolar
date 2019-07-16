@@ -1,0 +1,28 @@
+body {
+   
+   background-image: url(../O6VPZL0.jpg);
+   background-repeat: no-repeat;
+   background-attachment: fixed;
+   background-size: cover;
+   background-color: #464646;
+}
+div.contenedo{
+    text-align: center;
+    background-color: #ffffff;
+    width: 420px;
+    height: 280px;
+    margin: auto;
+    margin-top: 14%;
+    margin-bottom: 25%
+
+}
+div.titulo{
+    background-color: #00AAE4;
+    color: #ffffff;
+    font-size:2em;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    text-align: center;
+}
+.texto{
+    margin: 28px
+}

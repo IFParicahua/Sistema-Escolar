@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="{{ asset('css/fondo.css') }}" />
     <link rel="stylesheet" href="{{ asset('boostrap/css/bootstrap.min.css') }}" />
     <link rel="stylesheet" href="{{ asset('boostrap/js/bootstrap.min.js') }}" />
-
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <title>School</title>
 </head>
 <body >
@@ -16,11 +16,11 @@
         <table class="col-12" style="background-color: #5a80fb;text-align:center;">
             <thead>
                 <tr class="estilo">
-                    <th ><a href="http://www.google.com" ><img class="icono" src="iconos/businessman.svg"/></a></th>
-                    <th ><a href="http://www.google.com" ><img class="icono" src="iconos/businesswoman.svg"/></a></th>
-                    <th ><a href="http://www.google.com" ><img class="icono" src="iconos/man-13.svg"/></a></th>
-                    <th ><a href="http://www.google.com" ><img class="icono" src="iconos/woman-2.svg"/></a></th>
-                    <th ><a href="http://www.google.com" ><img class="icono" src="iconos/man-32.svg"/></a></th>
+                    <th ><a href="rec/Administrador" ><img class="icono" src="iconos/businessman.svg"/></a></th>
+                    <th ><a href="rec/Contador" ><img class="icono" src="iconos/businesswoman.svg"/></a></th>
+                    <th ><a href="rec/Regente" ><img class="icono" src="iconos/man-13.svg"/></a></th>
+                    <th ><a href="rec/Profesor" ><img class="icono" src="iconos/woman-2.svg"/></a></th>
+                    <th ><a href="rec/Padre" ><img class="icono" src="iconos/man-32.svg"/></a></th>
                 </tr>
             </thead>
             <tbody>
