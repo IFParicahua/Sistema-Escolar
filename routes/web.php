@@ -12,10 +12,9 @@
 */
 
 Route::get('/', function () {
-    return view('index');
-});
-
-Route::get('/rec/{id}','LoginController@rec');
-Route::get('/login','LoginController@view')->middleware('guest');
+    return view('logs');
+})->middleware('guest');
 Route::post('/login','LoginController@login')->name('login');
+
+Route::get('/inicio','LoginController@inicio');
 Route::get('/dashboard','DashboardController@index')->name('dashboard');
