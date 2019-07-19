@@ -13,10 +13,10 @@ class CreateUsuariosTable extends Migration
      */
     public function up()
     {
-        Schema::create('usuarios', function (Blueprint $table) {
+        Schema::create('users', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('username', 20);	
-            $table->string('password', 128);	
+            $table->string('username');
+            $table->string('password');	
             $table->unsignedBigInteger('id_persona');
             $table->foreign('id_persona')->references('id')->on('personas');
             $table->unsignedBigInteger('id_categoria_rol');	

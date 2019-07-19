@@ -16,4 +16,6 @@ Route::get('/', function () {
 });
 
 Route::get('/rec/{id}','LoginController@rec');
-Route::get('/login','LoginController@view');
+Route::get('/login','LoginController@view')->middleware('guest');
+Route::post('/login','LoginController@login')->name('login');
+Route::get('/dashboard','DashboardController@index')->name('dashboard');

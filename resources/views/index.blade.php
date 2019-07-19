@@ -16,11 +16,11 @@
         <table class="col-12" style="background-color: #5a80fb;text-align:center;">
             <thead>
                 <tr class="estilo">
-                    <th ><a href="rec/Administrador" ><img class="icono" src="iconos/businessman.svg"/></a></th>
-                    <th ><a href="rec/Contador" ><img class="icono" src="iconos/businesswoman.svg"/></a></th>
-                    <th ><a href="rec/Regente" ><img class="icono" src="iconos/man-13.svg"/></a></th>
-                    <th ><a href="rec/Profesor" ><img class="icono" src="iconos/woman-2.svg"/></a></th>
-                    <th ><a href="rec/Padre" ><img class="icono" src="iconos/man-32.svg"/></a></th>
+                    <th ><a href="rec/1" ><img class="icono" src="iconos/businessman.svg"/></a></th>
+                    <th ><a href="rec/2" ><img class="icono" src="iconos/businesswoman.svg"/></a></th>
+                    <th ><a href="rec/3" ><img class="icono" src="iconos/man-13.svg"/></a></th>
+                    <th ><a href="rec/4" ><img class="icono" src="iconos/woman-2.svg"/></a></th>
+                    <th ><a href="rec/5" ><img class="icono" src="iconos/man-32.svg"/></a></th>
                 </tr>
             </thead>
             <tbody>
