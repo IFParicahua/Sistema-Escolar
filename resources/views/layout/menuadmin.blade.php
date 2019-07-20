@@ -5,24 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="{{ asset('css/style.css') }}" />
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-    
+    <link rel="stylesheet" href="{{ asset('boostrap/css/bootstrap.min.css') }}" />
     <title>dashboard</title>
 </head>
 <body>
     <div class="sidebar">
         <h2>{{Auth::user()->username}}</h2>
-        <h4>Administrador</h4>
         <ul>
-            <li><a href="">Alumno</a></li>
-            <li><a href="">Profesor</a></li>
-            <li><a href="">Gestion</a></li>
-            <li><a href="">Nivel</a></li>
-            <li><a href="">Curso</a></li>
-            <li><a href="">Turno</a></li>
-            <li><a href="">Curso paralelo</a></li>
-            <li><a href="">Inscripcion</a></li>
+            <li><a href="AdminUser">Alumno</a></li>
+            <li><a href="AdminProfesor">Profesor</a></li>
+            <li><a href="AdminGestion">Gestion</a></li>
+            <li><a href="AdminNivel">Nivel</a></li>
+            <li><a href="AdminCurso">Curso</a></li>
+            <li><a href="AdminTurno">Turno</a></li>
+            <li><a href="AdminParalelo">Curso paralelo</a></li>
+            <li><a href="AdminInscripcion">Inscripcion</a></li>
             <li><a href="">Cerrar Sesion</a></li>
         </ul>
     </div>
@@ -30,6 +27,10 @@
         <img src="{{ asset('menuicon.png') }}" style="width: 40px" class="menu-bar">
         @yield('content')
     </div>
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
 
     <script src="{{ asset('js/estilo.js') }}"></script>
 </body>
