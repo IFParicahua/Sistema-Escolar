@@ -1,7 +1,6 @@
 @extends('layout.app')
 @section('content')
     <div class="row">
-        <h3>{{Session('key-user','0')}}</h3>
         <div class="contenedor">
             <form data-toggle="validator"  role="form" method="post" action="{{url('login')}}" id="form-new">
                 {{ csrf_field() }}

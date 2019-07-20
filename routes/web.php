@@ -17,4 +17,13 @@ Route::get('/', function () {
 Route::post('/login','LoginController@login')->name('login');
 
 Route::get('/inicio','LoginController@inicio');
-Route::get('/dashboard','DashboardController@index')->name('dashboard');
+Route::get('rol/{id}', 'LoginController@redirect')->name('rol');
+
+
+
+
+Route::get('/Administrador', function () { return view('Administrador'); });
+Route::get('/Contador', function () { return view('Contador'); });
+Route::get('/Regente', function () { return view('Regente'); });
+Route::get('/Profesor', function () { return view('Profesor'); });
+Route::get('/Padre', function () { return view('Padre'); });

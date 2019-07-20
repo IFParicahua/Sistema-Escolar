@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="{{ asset('css/style.css') }}" />
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    
     <title>dashboard</title>
 </head>
 <body>
@@ -20,10 +23,14 @@
             <li><a href="">Turno</a></li>
             <li><a href="">Curso paralelo</a></li>
             <li><a href="">Inscripcion</a></li>
+            <li><a href="">Cerrar Sesion</a></li>
         </ul>
     </div>
     <div class="contenido">
         <img src="{{ asset('menuicon.png') }}" style="width: 40px" class="menu-bar">
+        @yield('content')
     </div>
+
+    <script src="{{ asset('js/estilo.js') }}"></script>
 </body>
 </html>

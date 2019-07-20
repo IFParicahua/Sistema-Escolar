@@ -12,6 +12,21 @@ use App\User;
 
 class LoginController extends Controller
 {
+    
+    public function login(){
+        $credentials = $this->validate(request(),[
+            'username' => 'required|string',
+            'password' => 'required|string',
+        ]);
+
+
+        if (Auth::attempt($credentials)) {
+            return redirect('/inicio');
+        }else{
+            return back()->withErrors(['username' => trans('auth.failed')])->withInput(request(['username']));
+        }
+    }
+
     public function inicio(){
         $roles = DB::table('roles')
             ->join('persona_roles', 'roles.id', '=', 'persona_roles.id_rol')
@@ -20,18 +35,26 @@ class LoginController extends Controller
             ->get();
         return view('index',['roles' => $roles]);
     }
-    public function login(){
-        $credentials = $this->validate(request(),[
-            'username' => 'required|string',
-            'password' => 'required|string',
-        ]);
 
-        $user = Request::get('username');
-
-        if (Auth::attempt($credentials)) {
-            return redirect('/inicio');
-        }else{
-            return back()->withErrors(['username' => trans('auth.failed')])->withInput(request(['username']));
+    public function redirect($id){
+        switch ($id) {
+            case '1':
+                return redirect('/Administrador');
+                break;
+            case '2':
+                return redirect('/Contador');
+                break;
+            case '3':
+                return redirect('/Regente');
+                break;
+            
+            case '4':
+                return redirect('/Profesor');
+                break;
+    
+            case '5':
+                return redirect('/Padre');
+                break;
         }
     }
 
