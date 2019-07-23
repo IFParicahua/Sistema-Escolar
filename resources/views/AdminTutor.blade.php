@@ -5,42 +5,42 @@
 
   <div class="row">
     <div class="col-md-10 bg-primary">
-      <h3 style="text-align: center;color:#ffffff">Registro de Profesores</h3>
+      <h3 style="text-align: center;color:#ffffff">Registro de Tutores</h3>
     </div>
     <div class="col-md-2 bg-primary" style="text-align: right;">
-        <button type="button" class="btn btn-primary icon-plus" data-toggle="modal" data-target="#new-alumno" data-toggle="tooltip" title="Agregar" id="nuevo">Registrar</button>
+            <button type="button" class="btn btn-primary icon-plus" data-toggle="modal" data-target="#new-alumno" data-toggle="tooltip" title="Agregar" id="nuevo">Registrar</button>
     </div>
   </div>
     <div class="row">
-      <table class="table table-striped" style="background:#ffffff;">
-        <thead class="bg-primary" style="color:#ffffff">
-          <tr>
-            <th scope="col">Nombre</th>
-            <th scope="col">Apellido Paterno</th>
-            <th scope="col">Apellido Materno</th>
-            <th scope="col">Direccion</th>
-            <th scope="col">CI</th>
-            <th scope="col">Telefono</th>
-            <th scope="col">Sexo</th>
-            <th scope="col"></th>
-          </tr>
-        </thead>
-        <tbody>
-        @foreach ($profesores as $profesor)
-        <tr>
-            <td>{{$profesor->nombre}}</td>
-            <td>{{$profesor->apellidopat}}</td>
-            <td>{{$profesor->apellidomat}}</td>
-            <td>{{$profesor->direcciones}}</td>
-            <td>{{$profesor->cis}}</td>
-            <td>{{$profesor->telefonos}}</td>
-            <td>{{$profesor->sexos}}</td>
-            <td>Iconos</td>
-        </tr>
-        @endforeach
-          
-        </tbody>
-      </table>
+        <table class="table table-striped" style="background:#ffffff;">
+            <thead class="bg-primary" style="color:#ffffff">
+              <tr>
+                <th scope="col">Nombre</th>
+                <th scope="col">Apellido Paterno</th>
+                <th scope="col">Apellido Materno</th>
+                <th scope="col">Direccion</th>
+                <th scope="col">CI</th>
+                <th scope="col">Telefono</th>
+                <th scope="col">Sexo</th>
+                <th scope="col"></th>
+              </tr>
+            </thead>
+            <tbody>
+            @foreach ($tutores as $tutor)
+            <tr>
+                <td>{{$tutor->nombre}}</td>
+                <td>{{$tutor->apellidopat}}</td>
+                <td>{{$tutor->apellidomat}}</td>
+                <td>{{$tutor->direcciones}}</td>
+                <td>{{$tutor->cis}}</td>
+                <td>{{$tutor->telefonos}}</td>
+                <td>{{$tutor->sexos}}</td>
+                <td>Iconos</td>
+            </tr>
+            @endforeach
+              
+            </tbody>
+        </table>
     </div>
 </div>
 <!-- Modal Gestion new -->
@@ -48,10 +48,10 @@
   <div class="modal-dialog" style="height: 50px;" role="document">
       <div class="modal-content card-body" >
           <div>
-              <h5 class="modal-title">Guardar Profesor</h5>
+              <h5 class="modal-title">Guardar Tutor</h5>
           </div>
           <div class="modal-body">
-              <form data-toggle="validator" method="post" action="{{url('AdminProfesor/create')}}" role="form" id="form-new">
+              <form data-toggle="validator" method="post" action="{{url('AdminTutor/create')}}" role="form" id="form-new">
                   {!! csrf_field() !!}
                   <div class="panel-body">
 
@@ -81,24 +81,26 @@
                       </div>
 
                       <div class="row">
-                          
-                          <div id="telefono" class="form-group col-md-4 pl-1">
+                          <div id="ci" class="form-group col-md-6 pl-1">
+                              <label for="ci" class="control-label">CI:</label>
+                              <input type="text" class="form-control" id="ci" name="ci" maxlength="40" required>
+                          </div>
+                          <div id="telefono" class="form-group col-md-6 pl-1">
                               <label for="telefono" class="control-label">Telefono:</label>
                               <input type="text" class="form-control" id="telefono" name="telefono" maxlength="10" required>
                           </div>
-                          <div class="form-group col-md-4 pl-1">
-                            <label for="sexo">Sexo:</label>
-                            <select class="form-control" id="sexo" name="sexo">
-                              <option value="M">Masculino</option>
-                              <option value="F">Femenino</option>
-                            </select>
-                          </div>
-                          <div id="ci" class="form-group col-md-4 pl-1">
-                            <label for="ci" class="control-label">CI:</label>
-                            <input type="text" class="form-control" id="ci" name="ci" maxlength="40" required>
-                          </div>
-                          
                       </div>
+
+                      <div class="row">
+                          <div class="form-group col-md-6 pl-1">
+                              <label for="sexo">Sexo:</label>
+                              <select class="form-control" id="sexo" name="sexo">
+                                <option value="M">Masculino</option>
+                                <option value="F">Femenino</option>
+                              </select>
+                          </div>
+                      </div>
+
                   </div>
                   <div class="modal-footer">
                       <button type="button" class="btn btn-default btn-fill" data-dismiss="modal">Cerrar</button>

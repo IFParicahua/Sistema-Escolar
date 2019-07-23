@@ -12,7 +12,11 @@ class TablaRolesSeeder extends Seeder
     public function run()
     {
         DB::table('roles')->insert([
-            'categoria_rol'=>'Profesor'
+            ['categoria_rol'=>'Administrador'],
+            ['categoria_rol'=>'Contador'],
+            ['categoria_rol'=>'Regente'],
+            ['categoria_rol'=>'Profesor'],
+            ['categoria_rol'=>'Padre']
         ]);
     }
 }

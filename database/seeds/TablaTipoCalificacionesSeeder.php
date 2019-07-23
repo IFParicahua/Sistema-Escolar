@@ -12,8 +12,13 @@ class TablaTipoCalificacionesSeeder extends Seeder
     public function run()
     {
         DB::table('tipo_calificaciones')->insert([
-            'nombre'=>'tipo1',
-            'estado'=>'0'
+            [
+                'nombre'=>'Aprobado',
+                'estado'=>'0'
+            ],[
+                'nombre'=>'Reprobado',
+                'estado'=>'0'
+            ]
         ]);
     }
 }

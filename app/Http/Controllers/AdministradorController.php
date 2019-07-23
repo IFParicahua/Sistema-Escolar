@@ -7,6 +7,13 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 
+use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Validator;
+use Faker\Provider\DateTime;
+use Illuminate\Database\Seeder;
+use Illuminate\Validation\Rule;
+
 
 class AdministradorController extends Controller
 {
@@ -14,6 +21,21 @@ class AdministradorController extends Controller
         return view('Administrador');
     }
     //Vistas de tablas
+    public function tutor(){
+        $tutores = DB::table('personas')
+            ->join('tutores', 'personas.id', '=', 'tutores.id_persona')
+            ->select(
+                'personas.nombre as nombre',
+                'personas.apellidopat as apellidopat', 
+                'personas.apellidomat as apellidomat',
+                'personas.direccion as direcciones',
+                'personas.ci as cis',
+                'personas.telefono as telefonos',
+                'personas.sexo as sexos'
+                )
+            ->get();
+        return view('AdminTutor',['tutores' => $tutores]);
+    }
     public function usuario(){
         $roles = DB::table('personas')
             ->join('alumnos', 'personas.id', '=', 'alumnos.id_persona')
@@ -30,7 +52,7 @@ class AdministradorController extends Controller
             ->get();
         return view('AdminAlumno',['roles' => $roles]);
     }
-
+    
     public function profesor(){
         $profesores = DB::table('personas')
             ->join('profesores', 'personas.id', '=', 'profesores.id_persona')
@@ -63,7 +85,8 @@ class AdministradorController extends Controller
                 'niveles.nombre as nivel'
                 )
             ->get();
-        return view('AdminCurso',['cursos' => $cursos]);
+        $niveles = DB::table('niveles')->get();
+        return view('AdminCurso',['cursos' => $cursos],['niveles' => $niveles]);
     }
     public function turno(){
         $turnos = DB::table('turnos')->get();
@@ -82,7 +105,10 @@ class AdministradorController extends Controller
                 'curso_paralelos.nombre as nombre'
                 )
             ->get();
-        return view('AdminParalelo',['paralelos' => $paralelos]);
+        $turnos = DB::table('turnos')->get();
+        $cursos = DB::table('cursos')->get();
+        $gestiones = DB::table('gestiones')->get();
+        return view('AdminParalelo',compact('paralelos','turnos','cursos','gestiones'));
     }
     public function inscripcion(){
         $inscripciones = DB::table('inscripciones')
@@ -96,6 +122,172 @@ class AdministradorController extends Controller
                 'inscripciones.observacion as observacion'
                 )
             ->get();
-        return view('AdminInscripcion',['inscripciones' => $inscripciones]);
+        $paralelos = DB::table('curso_paralelos')->get();
+        return view('AdminInscripcion',compact('inscripciones','paralelos'));
+    }
+    //Search
+    public function tutorsearch(Request $request){
+        if ($request->get('query')) {
+            $query = $request->get('query');
+            $data = DB::table('personas')
+                ->join('tutores', 'personas.id', '=', 'tutores.id_persona')
+                ->where([['ci', 'like', "%{$query}%"]])
+                ->orWhere([['nombre', 'like', "%{$query}%"]])
+                ->get();
+            $output = '<ul class="dropdown-menu" style="display:block; position:relative">';
+            foreach ($data as $row) {
+                $output .= '<li class="pl-1 caja" id="'. $row->id.'"><a href="#" style="color: #1b1e21">' . $row->ci . ' - ' . $row->nombre . '</a></li>';
+            }
+            $output .= '</ul>';
+            echo $output;
+        }
+    }
+
+    public function alumnosearch(Request $request){
+        if ($request->get('query')) {
+            $query = $request->get('query');
+            $data = DB::table('personas')
+                ->join('alumnos', 'personas.id', '=', 'alumnos.id_persona')
+                ->where([['ci', 'like', "%{$query}%"]])
+                ->orWhere([['nombre', 'like', "%{$query}%"]])
+                ->get();
+            $output = '<ul class="dropdown-menu" style="display:block; position:relative">';
+            foreach ($data as $row) {
+                $output .= '<li class="pl-1 caja" id="'. $row->id.'"><a href="#" style="color: #1b1e21">' . $row->ci . ' - ' . $row->nombre . '</a></li>';
+            }
+            $output .= '</ul>';
+            echo $output;
+        }
+    }
+
+    //Post Crear del Admin
+    public function TutorCreate(Request $request){
+        DB::table('personas')->insert([
+            'nombre'=>$request->input('nombre'),
+            'apellidopat'=>$request->input('apaterno'),
+            'apellidomat'=>$request->input('amaterno'),
+            'direccion'=>$request->input('direccion'),
+            'ci'=>$request->input('ci'),
+            'telefono'=>$request->input('telefono'),
+            'sexo'=>$request->input('sexo')
+            ]
+        );
+        $cis = $request->input('ci');
+        $niv = DB::table('personas')->where('ci','=', $cis)->value('id');
+        DB::table('tutores')->insert([
+            'id_persona'=>$niv
+            ]
+        );
+        return back();
+    }
+
+    public function UserCreate(Request $request){
+        DB::table('personas')->insert([
+            'nombre'=>$request->input('nombre'),
+            'apellidopat'=>$request->input('apaterno'),
+            'apellidomat'=>$request->input('amaterno'),
+            'direccion'=>$request->input('direccion'),
+            'ci'=>$request->input('ci'),
+            'telefono'=>$request->input('telefono'),
+            'sexo'=>$request->input('sexo')
+            ]
+        );
+
+        $cis = $request->input('ci');
+
+        $niv = DB::table('personas')->where('ci','=', $cis)->value('id');
+        
+        DB::table('alumnos')->insert([
+            'fecha_nacimiento'=>$request->input('nacimiento'),
+            'id_persona'=>$niv,
+            'idtutor'=>$request->input('tutor_id'),
+            'rude'=>$request->input('rude')
+            ]
+        );
+        return back();
+    }
+
+    public function ProfesorCreate(Request $request){
+        DB::table('personas')->insert([
+            'nombre'=>$request->input('nombre'),
+            'apellidopat'=>$request->input('apaterno'),
+            'apellidomat'=>$request->input('amaterno'),
+            'direccion'=>$request->input('direccion'),
+            'ci'=>$request->input('ci'),
+            'telefono'=>$request->input('telefono'),
+            'sexo'=>$request->input('sexo')
+            ]
+        );
+        $cis = $request->input('ci');
+        $niv = DB::table('personas')->where('ci','=', $cis)->value('id');
+        DB::table('profesores')->insert([
+            'id_persona'=>$niv
+            ]
+        );
+        return back();
+    }
+
+    public function GestionCreate(Request $request){
+        DB::table('gestiones')->insert([
+            'nombre'=>$request->input('nombre'),
+            'fecha_inicial'=>$request->input('inicio'),
+            'fecha_final'=>$request->input('fin'),
+            'descripcion'=>$request->input('descripcion'),
+            'estado'=>'0'
+            ]
+        );
+        return back();
+    }
+
+    public function NivelesCreate(Request $request){
+        DB::table('niveles')->insert([
+            'nombre'=>$request->input('nombre'),
+            'estado'=>'0'
+            ]
+        );
+        return back();
+    }
+
+    public function CursosCreate(Request $request){
+        DB::table('cursos')->insert([
+            'nombre'=>$request->input('nombre'),
+            'grado'=>$request->input('grado'),
+            'id_nivel'=>$request->input('nivel'),
+            'estado'=>'0'
+            ]
+        );
+        return back();
+    }
+
+    public function TurnosCreate(Request $request){
+        DB::table('turnos')->insert([
+            'nombre'=>$request->input('nombre'),
+            'estado'=>'0'
+            ]
+        );
+        return back();
+    }
+
+    public function ParalelosCreate(Request $request){
+        DB::table('curso_paralelos')->insert([
+            'id_turno'=>$request->input('turno_id'),
+            'id_curso'=>$request->input('curso_id'),
+            'id_gestion'=>$request->input('gestion_id'),
+            'nombre'=>$request->input('nombre'),
+            'cupo_maximo'=>$request->input('cupo')
+            ]
+        );
+        return back();
+    }
+
+    public function InscripcionCreate(Request $request){
+        DB::table('inscripciones')->insert([
+            'fecha'=>date("Ymd"),
+            'observacion'=>$request->input('observacion'),
+            'id_cursos_paralelos'=>$request->input('paralelos_id'),
+            'id_alumno'=>$request->input('alumno_id')
+            ]
+        );
+        return back();
     }
 }

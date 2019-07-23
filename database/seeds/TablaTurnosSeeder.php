@@ -12,8 +12,13 @@ class TablaTurnosSeeder extends Seeder
     public function run()
     {
         DB::table('turnos')->insert([
-            'nombre'=>'tarde',
-            'estado'=>'0'
+            [
+                'nombre'=>'Mañana',
+                'estado'=>'0'
+            ],[
+                'nombre'=>'Tarde',
+                'estado'=>'0'
+            ]
         ]);
     }
 }

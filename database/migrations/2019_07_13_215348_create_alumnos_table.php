@@ -18,6 +18,8 @@ class CreateAlumnosTable extends Migration
             $table->dateTime('fecha_nacimiento');	
             $table->unsignedBigInteger('id_persona');	
             $table->foreign('id_persona')->references('id')->on('personas');
+            $table->unsignedBigInteger('idtutor');
+            $table->foreign('idtutor')->references('id')->on('tutores');
             $table->integer('rude');
             $table->timestamps();
         });
