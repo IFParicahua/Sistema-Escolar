@@ -25,7 +25,13 @@
           <tr>
             <td>{{$turno->nombre}}</td>
             <td>{{$turno->estado}}</td>
-            <td>Iconos</td>
+            <td>
+                <a  style="color: rgb(255,255,255)" class="btn btn-success btn-fill icon-pencil " id="edit-item"  title="Editar" 
+                data-id="{{$turno->id}}"
+                data-nombre="{{$turno->nombre}}"
+                ></a>
+                <button type="button" class="btn btn-danger icon-bin"></button>
+            </td>
           </tr>
         @endforeach
               
@@ -38,7 +44,7 @@
   <div class="modal-dialog" style="height: 50px;" role="document">
       <div class="modal-content card-body" >
           <div>
-              <h5 class="modal-title">Guardar Gestion</h5>
+              <h5 class="modal-title">Guardar Turno</h5>
           </div>
           <div class="modal-body">
               <form data-toggle="validator" method="post" action="{{url('AdminTurnos/create')}}" role="form" id="form-new">
@@ -61,5 +67,48 @@
       </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
 </div>
+<!-- Modal Gestion new -->
+<div class="modal fade col-lg-12" id="edit-turno" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+    <div class="modal-dialog" style="height: 50px;" role="document">
+        <div class="modal-content card-body" >
+            <div>
+                <h5 class="modal-title">Editar Turno</h5>
+            </div>
+            <div class="modal-body">
+                <form data-toggle="validator" method="post" action="{{url('AdminTurnos/edit')}}" role="form" id="form-new">
+                    {!! csrf_field() !!}
+                    <div class="panel-body">
+                        <input type="hidden" class="form-control" id="pkturno" name="pkturno" >
+
+                        <div class="row">
+                            <div class="form-group col-md-12 pl-1">
+                                <label for="editnombre" class="control-label">Nombre:</label>
+                                <input type="text" class="form-control" id="editnombre" name="editnombre" maxlength="40" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default btn-fill" data-dismiss="modal">Cerrar</button>
+                        <button type="submit" class="btn btn-primary btn-fill">Guardar</button>
+                    </div>
+                    
+                </form>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+  </div>
+  <script>
+      $(document).on('click', "#edit-item", function() {
+        var id = $(this).data("id");
+        var nombre = $(this).data("nombre");
+        
+    
+        $("#pkturno").val(id);
+        $("#editnombre").val(nombre);
+        
+        $("#edit-turno").modal('show');
+      
+      })
+      </script>
 @endsection
 
