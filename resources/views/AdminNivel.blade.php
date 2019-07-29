@@ -24,14 +24,20 @@
         @foreach ($niveles as $nivel)
         <tr>
             <td>{{$nivel->nombre}}</td>
-            <td style="text-align: center">{{$nivel->estado}}</td>
+            <td style="text-align: center">
+              @if ($nivel->estado == 0)
+                  Abierto
+              @else
+                  Cerrado
+              @endif
+            </td>
             <td style="text-align: right">
                 <a  style="color: rgb(255,255,255)" class="btn btn-success btn-fill icon-pencil " id="edit-item"  title="Editar" 
                 data-id="{{$nivel->id}}"
                 data-nombre="{{$nivel->nombre}}"
                 ></a>
-                <button type="button" class="btn btn-danger icon-bin"></button>
-            </td>
+                <a class="btn btn-danger icon-bin" data-toggle="tooltip" title="Eliminar" href="AdminNiveles/{{$nivel->id}}/delete" data-confirm="¿Estas seguro que quieres eliminar a {{$nivel->nombre}}?"></a>
+              </td>
         </tr>
         @endforeach
           
@@ -97,6 +103,18 @@
   </div><!-- /.modal-dialog -->
 </div>
 <script>
+  $(document).ready(function() {
+            $('a[data-confirm]').click(function(ev) {
+                var href = $(this).attr('href');
+                if (!$('#dataConfirmModal').length) {
+                    $('body').append('<div class="modal fade in" id="dataConfirmModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: block;"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"></div><div class="modal-body"></div><div class="modal-footer"><button type="button" class="btn btn-default btn-fill" data-dismiss="modal">Cancelar</button><a style="color: #ffffff" class="btn btn-primary btn-fill" id="dataConfirmOK">Aceptar</a></div></div></div></div>');
+                }
+                $('#dataConfirmModal').find('.modal-body').text($(this).attr('data-confirm'));
+                $('#dataConfirmOK').attr('href', href);
+                $('#dataConfirmModal').modal({show:true});
+                return false;
+            });
+        });
     $(document).on('click', "#edit-item", function() {
       var id = $(this).data("id");
       var nombre = $(this).data("nombre");

@@ -48,11 +48,10 @@
                     data-telefono="{{$tutor->telefonos}}"
                     data-sexo="{{$tutor->sexos}}"
                     ></a>
-                    <button type="button" class="btn btn-danger icon-bin"></button>
+                    <a class="btn btn-danger icon-bin" data-toggle="tooltip" title="Eliminar" href="AdminTutor/{{$tutor->idtutor}}/delete" data-confirm="¿Estas seguro que quieres eliminar a {{$tutor->nombre}}?"></a>
                 </td>
             </tr>
             @endforeach
-              
             </tbody>
         </table>
     </div>
@@ -195,7 +194,20 @@
       </div>
 
 <script>
+    $(document).ready(function() {
+            $('a[data-confirm]').click(function(ev) {
+                var href = $(this).attr('href');
+                if (!$('#dataConfirmModal').length) {
+                    $('body').append('<div class="modal fade in" id="dataConfirmModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: block;"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"></div><div class="modal-body"></div><div class="modal-footer"><button type="button" class="btn btn-default btn-fill" data-dismiss="modal">Cancelar</button><a style="color: #ffffff" class="btn btn-primary btn-fill" id="dataConfirmOK">Aceptar</a></div></div></div></div>');
+                }
+                $('#dataConfirmModal').find('.modal-body').text($(this).attr('data-confirm'));
+                $('#dataConfirmOK').attr('href', href);
+                $('#dataConfirmModal').modal({show:true});
+                return false;
+            });
+        });
   $(document).on('click', "#edit-item", function() {
+    // toastr.error("Hola");
     $("#editsexo").empty();
       var id = $(this).data("id");
       var nombre = $(this).data("nombre");

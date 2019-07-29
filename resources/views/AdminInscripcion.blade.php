@@ -38,7 +38,7 @@
                 data-idalumno="{{$inscripcion->idalumno}}"
                 data-alumno="{{$inscripcion->alumno}}"
                 ></a>
-                <button type="button" class="btn btn-danger icon-bin"></button>
+                <a class="btn btn-danger icon-bin" data-toggle="tooltip" title="Eliminar" href="AdminInscripcion/{{$inscripcion->id}}/delete" data-confirm="¿Estas seguro que quieres eliminar la inscripcion de {{$inscripcion->alumno}}?"></a>
             </td>
           </tr>
           @endforeach
@@ -59,22 +59,9 @@
         {!! csrf_field() !!}
           <div class="panel-body">
 
-            <div class="row">
-              <div id="observacion" class="form-group col-md-12 pl-1">
-                <label for="observacion" class="control-label">Observacion:</label>
-                <input type="text" class="form-control" id="observacion" name="observacion" maxlength="40" required>
-              </div>
-            </div>
+            
 
             <div class="row">
-              <div class="form-group col-md-6 pl-1">
-                <label for="paralelos_id">Cursos Paralelos:</label>
-                <select class="form-control" id="paralelos_id" name="paralelos_id">
-                  @foreach ($paralelos as $paralelo)
-                  <option value="{{$paralelo->id}}">{{$paralelo->nombre}}</option>
-                  @endforeach
-                </select>
-              </div>
               <div class="form-group col-md-6 pl-1">
                 <label for="alumno_name" class="form-label">Alumno:</label>
                 <input type="text" name="alumno_name" id="alumno_name" class="form-control" autocomplete="off" required/>
@@ -108,7 +95,21 @@
                   });
                 </script>
               </div>
+              <div class="form-group col-md-6 pl-1">
+                  <label for="paralelos_id">Cursos Paralelos:</label>
+                  <select class="form-control" id="paralelos_id" name="paralelos_id">
+                    @foreach ($paralelos as $paralelo)
+                    <option value="{{$paralelo->id}}">{{$paralelo->turno}} - {{$paralelo->nombre}}</option>
+                    @endforeach
+                  </select>
+                </div>
             </div>
+            <div class="row">
+                <div id="observacion" class="form-group col-md-12 pl-1">
+                  <label for="observacion" class="control-label">Observacion:</label>
+                  <input type="text" class="form-control" id="observacion" name="observacion" maxlength="40" required>
+                </div>
+              </div>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-default btn-fill" data-dismiss="modal">Cerrar</button>
@@ -193,6 +194,18 @@
     </div><!-- /.modal-dialog -->
   </div>
   <script>
+    $(document).ready(function() {
+            $('a[data-confirm]').click(function(ev) {
+                var href = $(this).attr('href');
+                if (!$('#dataConfirmModal').length) {
+                    $('body').append('<div class="modal fade in" id="dataConfirmModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: block;"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"></div><div class="modal-body"></div><div class="modal-footer"><button type="button" class="btn btn-default btn-fill" data-dismiss="modal">Cancelar</button><a style="color: #ffffff" class="btn btn-primary btn-fill" id="dataConfirmOK">Aceptar</a></div></div></div></div>');
+                }
+                $('#dataConfirmModal').find('.modal-body').text($(this).attr('data-confirm'));
+                $('#dataConfirmOK').attr('href', href);
+                $('#dataConfirmModal').modal({show:true});
+                return false;
+            });
+        });
       $(document).on('click', "#edit-item", function() {
         $("#editparalelos_id").empty();
         var id = $(this).data("id");

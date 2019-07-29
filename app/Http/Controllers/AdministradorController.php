@@ -32,7 +32,8 @@ class AdministradorController extends Controller
                 'personas.direccion as direcciones',
                 'personas.ci as cis',
                 'personas.telefono as telefonos',
-                'personas.sexo as sexos'
+                'personas.sexo as sexos',
+                'tutores.id as idtutor'
                 )
             ->get();
         return view('AdminTutor',['tutores' => $tutores]);
@@ -51,12 +52,12 @@ class AdministradorController extends Controller
                 'personas.sexo as sexos',
                 'alumnos.fecha_nacimiento as nacimiento',
                 'alumnos.idtutor as idtutor',
-                'alumnos.rude as rudes'
+                'alumnos.rude as rudes',
+                'alumnos.id as idalumno'
                 )
             ->get();
         return view('AdminAlumno',['roles' => $roles]);
-    }
-    
+    } 
     public function profesor(){
         $profesores = DB::table('personas')
             ->join('profesores', 'personas.id', '=', 'profesores.id_persona')
@@ -68,7 +69,8 @@ class AdministradorController extends Controller
                 'personas.direccion as direcciones',
                 'personas.ci as cis',
                 'personas.telefono as telefonos',
-                'personas.sexo as sexos'
+                'personas.sexo as sexos',
+                'profesores.id as idprofesor'
                 )
             ->get();
         return view('AdminProfesor',['profesores' => $profesores]);
@@ -90,8 +92,7 @@ class AdministradorController extends Controller
                 'cursos.grado as grado', 
                 'cursos.estado as estado',
                 'niveles.nombre as nivel',
-                'cursos.id_nivel as idnivel'
-                )
+                'cursos.id_nivel as idnivel'                )
             ->get();
         $niveles = DB::table('niveles')->get();
         return view('AdminCurso',['cursos' => $cursos],['niveles' => $niveles]);
@@ -137,7 +138,11 @@ class AdministradorController extends Controller
                 'inscripciones.id_alumno as idalumno'
                 )
             ->get();
-        $paralelos = DB::table('curso_paralelos')->get();
+        $paralelos = DB::table('curso_paralelos')->join('turnos', 'curso_paralelos.id_turno', '=', 'turnos.id')->select(
+            'curso_paralelos.id as id',
+            'curso_paralelos.nombre as nombre', 
+            'turnos.nombre as turno'
+        )->get();
         return view('AdminInscripcion',compact('inscripciones','paralelos'));
     }
     //Search
@@ -151,13 +156,12 @@ class AdministradorController extends Controller
                 ->get();
             $output = '<ul class="dropdown-menu" style="display:block; position:relative">';
             foreach ($data as $row) {
-                $output .= '<li class="pl-1 caja" id="'. $row->id.'"><a href="#" style="color: #1b1e21">' . $row->ci . ' - ' . $row->nombre . '</a></li>';
+                $output .= '<li class="pl-1 caja" id="'. $row->id.'"><a href="#" style="color: #1b1e21">' . $row->ci . ' - ' . $row->nombre . ' ' . $row->apellidopat . ' ' . $row->apellidomat . '</a></li>';
             }
             $output .= '</ul>';
             echo $output;
         }
     }
-
     public function tutorname(Request $request){
         if ($request->get('query')) {
             $query = $request->get('query');
@@ -170,7 +174,6 @@ class AdministradorController extends Controller
             echo $output;
         }
     }
-
     public function alumnosearch(Request $request){
         if ($request->get('query')) {
             $query = $request->get('query');
@@ -181,13 +184,12 @@ class AdministradorController extends Controller
                 ->get();
             $output = '<ul class="dropdown-menu" style="display:block; position:relative">';
             foreach ($data as $row) {
-                $output .= '<li class="pl-1 caja" id="'. $row->id.'"><a href="#" style="color: #1b1e21">' . $row->ci . ' - ' . $row->nombre . '</a></li>';
+                $output .= '<li class="pl-1 caja" id="'. $row->id.'"><a href="#" style="color: #1b1e21">' . $row->ci . ' - ' . $row->nombre . ' ' . $row->apellidopat . ' ' . $row->apellidomat .  '</a></li>';
             }
             $output .= '</ul>';
             echo $output;
         }
     }
-    
     public function nivelsearch(Request $request){
         if ($request->get('query')) {
             $query = $request->get('query');
@@ -199,7 +201,6 @@ class AdministradorController extends Controller
             echo $output;
         }
     }
-
     public function turnosearch(Request $request){
         if ($request->get('query')) {
             $query = $request->get('query');
@@ -244,7 +245,6 @@ class AdministradorController extends Controller
             echo $output;
         }
     }
-
     //Post Crear del Admin
     public function TutorCreate(Request $request){
         DB::table('personas')->insert([
@@ -265,7 +265,6 @@ class AdministradorController extends Controller
         );
         return back();
     }
-
     public function UserCreate(Request $request){
         DB::table('personas')->insert([
             'nombre'=>$request->input('nombre'),
@@ -291,7 +290,6 @@ class AdministradorController extends Controller
         );
         return back();
     }
-
     public function ProfesorCreate(Request $request){
         DB::table('personas')->insert([
             'nombre'=>$request->input('nombre'),
@@ -311,19 +309,84 @@ class AdministradorController extends Controller
         );
         return back();
     }
-
     public function GestionCreate(Request $request){
-        DB::table('gestiones')->insert([
-            'nombre'=>$request->input('nombre'),
-            'fecha_inicial'=>$request->input('inicio'),
-            'fecha_final'=>$request->input('fin'),
-            'descripcion'=>$request->input('descripcion'),
-            'estado'=>'0'
-            ]
-        );
-        return back();
+        $inicio = $request->input('inicio');
+        $fin = $request->input('fin');
+        $date_inicio = DB::table('gestiones')->where([
+            ['fecha_inicial', '<=', $inicio],
+            ['fecha_final', '>=', $inicio],
+        ])->value('fecha_final');
+        $date_fin = DB::table('gestiones')->where([
+            ['fecha_inicial', '<=', $fin],
+            ['fecha_final', '>=', $fin],
+        ])->value('fecha_inicial');
+        $date_entre = DB::table('gestiones')->where([
+            ['fecha_inicial', '>', $inicio],
+            ['fecha_final', '<', $fin],
+        ])->count();
+        $validator = Validator::make($request->all(), [
+            'fin' => 'after:inicio'
+        ]);
+        if ($date_inicio > 0) {
+            if ($date_fin > 0) {
+                $notificacion = array(
+                    'message' => 'La fecha de inicio y fin estan en un rango existente',
+                    'alert-type' => 'error'
+                );
+                return back()->with($notificacion)
+                ->with('error_code', 1)
+                ->withInput();
+            } else {
+                $notificacion = array(
+                    'message' => 'La fecha de inicio esta en un rango existente',
+                    'alert-type' => 'error'
+                );
+                return back()->with($notificacion)
+                ->with('error_code', 1)
+                ->withInput();
+            }
+        } else {
+            if ($date_fin > 0) {
+                $notificacion = array(
+                    'message' => 'La fecha de fin esta en un rango existente',
+                    'alert-type' => 'error'
+                );
+                return back()->with($notificacion)
+                ->with('error_code', 1)
+                ->withInput();
+            } else {
+                if ($date_entre > 0) {
+                    $notificacion = array(
+                        'message' => 'Existen gestiones dentro del rango de fechas',
+                        'alert-type' => 'error'
+                    );
+                    return back()->with($notificacion)
+                    ->with('error_code', 1)
+                    ->withInput();
+                }else {
+                    if ($validator->fails()) {
+                        $notificacion = array(
+                            'message' => 'La fecha de inicio debe ser menor a la fecha final',
+                            'alert-type' => 'error'
+                        );
+                        return back()->with($notificacion)
+                        ->with('error_code', 1)
+                        ->withInput();
+                    } else {
+                        DB::table('gestiones')->insert([
+                            'nombre'=>$request->input('nombre'),
+                            'fecha_inicial'=>$request->input('inicio'),
+                            'fecha_final'=>$request->input('fin'),
+                            'descripcion'=>$request->input('descripcion'),
+                            'estado'=>'0'
+                            ]
+                        );
+                        return back();
+                    }
+                }
+            }
+        }
     }
-
     public function NivelesCreate(Request $request){
         DB::table('niveles')->insert([
             'nombre'=>$request->input('nombre'),
@@ -332,7 +395,6 @@ class AdministradorController extends Controller
         );
         return back();
     }
-
     public function CursosCreate(Request $request){
         DB::table('cursos')->insert([
             'nombre'=>$request->input('nombre'),
@@ -343,7 +405,6 @@ class AdministradorController extends Controller
         );
         return back();
     }
-
     public function TurnosCreate(Request $request){
         DB::table('turnos')->insert([
             'nombre'=>$request->input('nombre'),
@@ -352,7 +413,6 @@ class AdministradorController extends Controller
         );
         return back();
     }
-
     public function ParalelosCreate(Request $request){
         DB::table('curso_paralelos')->insert([
             'id_turno'=>$request->input('turno_id'),
@@ -364,7 +424,6 @@ class AdministradorController extends Controller
         );
         return back();
     }
-
     public function InscripcionCreate(Request $request){
         DB::table('inscripciones')->insert([
             'fecha'=>date("Ymd"),
@@ -410,7 +469,6 @@ class AdministradorController extends Controller
         );
     return back();
     }
-
     public function profesorEditar(Request $request){
         $id = $request->input('pkpersona');
         DB::table('personas')->where('id', $id)->update([
@@ -425,7 +483,6 @@ class AdministradorController extends Controller
         );
     return back();
     }
-
     public function gestionEditar(Request $request){
         $id = $request->input('pkgestion');
         DB::table('gestiones')->where('id', $id)->update([
@@ -463,7 +520,6 @@ class AdministradorController extends Controller
         );
     return back();
     }
-    
     public function paraleloEditar(Request $request){
         $id = $request->input('pkparalelo');
         DB::table('curso_paralelos')->where('id', $id)->update([
@@ -486,6 +542,162 @@ class AdministradorController extends Controller
         );
     return back();
     }
+    //DELETE
+    public function tutorDelete($id)
+    {
+        try {
+            $idpersona = DB::table('tutores')->where('id', '=', $id)->value('id_persona');
+            DB::table('tutores')->where('id', '=', $id)->delete();
+            DB::table('personas')->where('id', '=', $idpersona)->delete();
+            return back();
+        } catch (QueryException $e) {
+            $nombre = DB::table('personas')
+            ->join('tutores', 'personas.id', '=', 'tutores.id_persona')
+            ->where('tutores.id', '=', $id)->value('personas.nombre');
+            $notificacion = array(
+                'message' => 'No se pudo eliminar a '.$nombre,
+                'alert-type' => 'error'
+            );
+            return back()->with($notificacion);
+        }
+        
+    }
+    public function alumnoDelete($id)
+    {
+        try {
+            $idpersona = DB::table('alumnos')->where('id', '=', $id)->value('id_persona');
+            DB::table('alumnos')->where('id', '=', $id)->delete();
+            DB::table('personas')->where('id', '=', $idpersona)->delete();
+            return back();
+        } catch (QueryException $e) {
+            $nombre = DB::table('personas')
+            ->join('alumnos', 'personas.id', '=', 'alumnos.id_persona')
+            ->where('alumnos.id', '=', $id)->value('personas.nombre');
+            $notificacion = array(
+                'message' => 'No se pudo eliminar a '.$nombre,
+                'alert-type' => 'error'
+            );
+            return back()->with($notificacion);
+        }
+        
+    }
+    public function profesorDelete($id)
+    {
+        try {
+            $idpersona = DB::table('profesores')->where('id', '=', $id)->value('id_persona');
+            DB::table('profesores')->where('id', '=', $id)->delete();
+            DB::table('personas')->where('id', '=', $idpersona)->delete();
+            return back();
+        } catch (QueryException $e) {
+            $nombre = DB::table('personas')
+            ->join('profesores', 'personas.id', '=', 'profesores.id_persona')
+            ->where('profesores.id', '=', $id)->value('personas.nombre');
+            $notificacion = array(
+                'message' => 'No se pudo eliminar a '.$nombre,
+                'alert-type' => 'error'
+            );
+            return back()->with($notificacion);
+        }
+        
+    }
+    public function gestionDelete($id)
+    {
+        try {
+            DB::table('gestiones')->where('id', '=', $id)->delete();
+            return back();
+        } catch (QueryException $e) {
+            $nombre = DB::table('gestiones')
+            ->where('id', '=', $id)->value('nombre');
+            $notificacion = array(
+                'message' => 'No se pudo eliminar a '.$nombre,
+                'alert-type' => 'error'
+            );
+            return back()->with($notificacion);
+        }
+        
+    }
+    public function niveleDelete($id)
+    {
+        try {
+            DB::table('niveles')->where('id', '=', $id)->delete();
+            return back();
+        } catch (QueryException $e) {
+            $nombre = DB::table('niveles')
+            ->where('id', '=', $id)->value('nombre');
+            $notificacion = array(
+                'message' => 'No se pudo eliminar a '.$nombre,
+                'alert-type' => 'error'
+            );
+            return back()->with($notificacion);
+        }
+        
+    }
+    public function cursoDelete($id)
+    {
+        try {
+            DB::table('cursos')->where('id', '=', $id)->delete();
+            return back();
+        } catch (QueryException $e) {
+            $nombre = DB::table('cursos')
+            ->where('id', '=', $id)->value('nombre');
+            $notificacion = array(
+                'message' => 'No se pudo eliminar a '.$nombre,
+                'alert-type' => 'error'
+            );
+            return back()->with($notificacion);
+        }
+        
+    }
+    public function turnoDelete($id)
+    {
+        try {
+            DB::table('turnos')->where('id', '=', $id)->delete();
+            return back();
+        } catch (QueryException $e) {
+            $nombre = DB::table('turnos')
+            ->where('id', '=', $id)->value('nombre');
+            $notificacion = array(
+                'message' => 'No se pudo eliminar a '.$nombre,
+                'alert-type' => 'error'
+            );
+            return back()->with($notificacion);
+        }
+        
+    }
+    public function paralelosDelete($id)
+    {
+        try {
+            DB::table('curso_paralelos')->where('id', '=', $id)->delete();
+            return back();
+        } catch (QueryException $e) {
+            $nombre = DB::table('curso_paralelos')
+            ->where('id', '=', $id)->value('nombre');
+            $notificacion = array(
+                'message' => 'No se pudo eliminar a '.$nombre,
+                'alert-type' => 'error'
+            );
+            return back()->with($notificacion);
+        }
+        
+    }
+    public function inscripcionDelete($id)
+    {
+        try {
+            DB::table('inscripciones')->where('id', '=', $id)->delete();
+            return back();
+        } catch (QueryException $e) {
+            $nombre = DB::table('inscripciones')
+            ->join('curso_paralelos', 'curso_paralelos.id', '=', 'inscripciones.id_cursos_paralelos')
+            ->join('alumnos', 'inscripciones.id_alumno', '=', 'alumnos.id')
+            ->join('personas', 'alumnos.id_persona', '=', 'personas.id')
+            ->where('inscripciones.id', '=', $id)->value('personas.nombre');
+            $notificacion = array(
+                'message' => 'No se puede eliminar la inscripcion de '.$nombre,
+                'alert-type' => 'error'
+            );
+            return back()->with($notificacion);
+        }
+        
+    }
+    
 }
-
-
