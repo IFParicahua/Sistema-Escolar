@@ -21,6 +21,9 @@
     <div class="sidebar">
         <h2>{{Auth::user()->username}}</h2>
         <ul>
+            <li><a href="AdminArea">Area</a></li>
+            <li><a href="AdminMateria">Materias</a></li>
+            <li><a href="AdminAsignarMateria">Asignacion de Materias</a></li>
             <li><a href="AdminTutor">Tutor</a></li>
             <li><a href="AdminUser">Alumno</a></li>
             <li><a href="AdminProfesor">Profesor</a></li>
@@ -30,7 +33,12 @@
             <li><a href="AdminTurno">Turno</a></li>
             <li><a href="AdminParalelo">Curso paralelo</a></li>
             <li><a href="AdminInscripcion">Inscripcion</a></li>
-            <li><a href="">Cerrar Sesion</a></li>
+            <li>
+                <form action="{{url('logout')}}" method="post">
+                        {!! csrf_field() !!}
+                    <button type="submit" class="btn icon-enter" > Cerrar sesion</button>
+                </form>
+            </li>
         </ul>
     </div>
     <div class="contenido">

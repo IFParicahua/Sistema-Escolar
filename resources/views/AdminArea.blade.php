@@ -5,10 +5,10 @@
 
   <div class="row">
     <div class="col-md-10 bg-primary">
-      <h3 style="text-align: center;color:#ffffff">Registro de Niveles</h3>
+      <h3 style="text-align: center;color:#ffffff">Registro de Areas</h3>
     </div>
     <div class="col-md-2 bg-primary" style="text-align: right;">
-        <button type="button" class="btn btn-primary icon-plus" data-toggle="modal" data-target="#new-nivel" data-toggle="tooltip" title="Agregar" id="nuevo">Registrar</button>
+        <button type="button" class="btn btn-primary icon-plus" data-toggle="modal" data-target="#new-area" data-toggle="tooltip" title="Agregar" id="nuevo">Registrar</button>
     </div>
   </div>
     <div class="row">
@@ -16,27 +16,27 @@
         <thead class="bg-primary" style="color:#ffffff">
           <tr>
             <th scope="col">Nombre</th>
-            <th scope="col" style="text-align: center">Estado</th>
+            <th scope="col">Estado</th>
             <th scope="col"></th>
           </tr>
         </thead>
         <tbody>
-        @foreach ($niveles as $nivel)
+        @foreach ($areas as $area)
         <tr>
-            <td>{{$nivel->nombre}}</td>
-            <td style="text-align: center">
-              @if ($nivel->estado == 0)
+            <td>{{$area->nombre}}</td>
+            <td>
+              @if ($area->estado == 0)
                   Abierto
               @else
                   Cerrado
               @endif
             </td>
-            <td style="text-align: right">
+            <td>
                 <a  style="color: rgb(255,255,255)" class="btn btn-success btn-fill icon-pencil " id="edit-item"  title="Editar" 
-                data-id="{{$nivel->id}}"
-                data-nombre="{{$nivel->nombre}}"
+                data-id="{{$area->id}}"
+                data-nombre="{{$area->nombre}}"
                 ></a>
-                <a class="btn btn-danger icon-bin" data-toggle="tooltip" title="Eliminar" href="AdminNiveles/{{$nivel->id}}/delete" data-confirm="¿Estas seguro que quieres eliminar a {{$nivel->nombre}}?"></a>
+                <a class="btn btn-danger icon-bin" data-toggle="tooltip" title="Eliminar" href="AdminArea/{{$area->id}}/delete" data-confirm="¿Estas seguro que quieres eliminar a {{$area->nombre}}?"></a>
               </td>
         </tr>
         @endforeach
@@ -46,23 +46,25 @@
     </div>
 </div>
 <!-- Modal Gestion new -->
-<div class="modal fade col-lg-12" id="new-nivel" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+<div class="modal fade col-lg-12" id="new-area" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
   <div class="modal-dialog" style="height: 50px;" role="document">
       <div class="modal-content card-body" >
           <div>
-              <h5 class="modal-title">Guardar Nivel</h5>
+              <h5 class="modal-title">Guardar Areas</h5>
           </div>
           <div class="modal-body">
-              <form data-toggle="validator" method="post" action="{{url('AdminNiveles/create')}}" role="form" id="form-new">
+              <form data-toggle="validator" method="post" action="{{url('AdminArea/create')}}" role="form" id="form-new">
                   {!! csrf_field() !!}
                   <div class="panel-body">
+
                       <div class="row">
                           <div id="nombre" class="form-group col-md-12 pl-1">
                               <label for="nombre" class="control-label">Nombre:</label>
-                              <input type="text" class="form-control" id="nombre" name="nombre" maxlength="40" required>
+                              <input type="text" class="form-control" id="nombre" name="nombre" maxlength="40" value="{{ old('nombre') }}" required>
                           </div>
                       </div>
                     </div>
+                  </div>
                   <div class="modal-footer">
                       <button type="button" class="btn btn-default btn-fill" data-dismiss="modal">Cerrar</button>
                       <button type="submit" class="btn btn-primary btn-fill">Guardar</button>
@@ -73,25 +75,26 @@
       </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
 </div>
-<!-- Modal Nivel edit -->
-<div class="modal fade col-lg-12" id="edit-nivel" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+<!-- Modal Gestion new -->
+<div class="modal fade col-lg-12" id="edit-area" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
   <div class="modal-dialog" style="height: 50px;" role="document">
       <div class="modal-content card-body" >
           <div>
-              <h5 class="modal-title">Editar Nivel</h5>
+              <h5 class="modal-title">Editar Areas</h5>
           </div>
           <div class="modal-body">
-              <form data-toggle="validator" method="post" action="{{url('AdminNiveles/edit')}}" role="form" id="form-new">
+              <form data-toggle="validator" method="post" action="{{url('AdminArea/edit')}}" role="form" id="form-new">
                   {!! csrf_field() !!}
                   <div class="panel-body">
-                      <input type="hidden" class="form-control" id="pknivel" name="pknivel">
+                      <input type="hidden" class="form-control" id="pkarea" name="pkarea">
+
                       <div class="row">
                           <div class="form-group col-md-12 pl-1">
                               <label for="editnombre" class="control-label">Nombre:</label>
                               <input type="text" class="form-control" id="editnombre" name="editnombre" maxlength="40" required>
                           </div>
                       </div>
-                    </div>
+                  </div>
                   <div class="modal-footer">
                       <button type="button" class="btn btn-default btn-fill" data-dismiss="modal">Cerrar</button>
                       <button type="submit" class="btn btn-primary btn-fill">Guardar</button>
@@ -102,6 +105,13 @@
       </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
 </div>
+@if(!empty(Session::get('error_code')) && Session::get('error_code') == 1)
+        <script>
+            $(function() {
+                $('#new-area').modal('show');
+            });
+        </script>
+    @endif
 <script>
   $(document).ready(function() {
             $('a[data-confirm]').click(function(ev) {
@@ -115,16 +125,16 @@
                 return false;
             });
         });
-    $(document).on('click', "#edit-item", function() {
-      var id = $(this).data("id");
-      var nombre = $(this).data("nombre");
-  
-      $("#pknivel").val(id);
-      $("#editnombre").val(nombre);
-      
-      $("#edit-nivel").modal('show');
+  $(document).on('click', "#edit-item", function() {
+    var id = $(this).data("id");
+    var nombre = $(this).data("nombre");
     
-    })
-    </script>
-@endsection
 
+    $("#pkarea").val(id);
+    $("#editnombre").val(nombre);
+    
+    $("#edit-area").modal('show');
+  
+  })
+  </script>
+@endsection

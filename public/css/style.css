@@ -46,6 +46,16 @@ body{
     text-decoration: none;
     padding: 10px;
 }
+.sidebar a:hover{
+    color: #ffffff;
+    text-decoration: none;
+}
+.sidebar button{
+    color: #ffffff;
+}
+.sidebar button:hover{
+    color: #ffffff;
+}
 
 .contenido{
     width: 100%;

@@ -53,4 +53,8 @@ div.titulo{
     color: white;
     text-align: center;
 }
+.menu a:hover{
+    text-decoration: none;
+    color: rgba(255, 255, 255, 0.767);
+}
 

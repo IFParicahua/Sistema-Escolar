@@ -27,6 +27,11 @@ class LoginController extends Controller
         }
     }
 
+    public function logout(){
+        Auth::logout();
+        return redirect('/');
+    }
+
     public function inicio(){
         $roles = DB::table('roles')
             ->join('persona_roles', 'roles.id', '=', 'persona_roles.id_rol')

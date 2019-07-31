@@ -15,6 +15,7 @@ Route::get('/', function () {
     return view('logs');
 })->middleware('guest');
 Route::post('/login','LoginController@login')->name('login');
+Route::post('/logout','LoginController@logout')->name('logout');
 Route::get('/inicio','LoginController@inicio');
 Route::get('rol/{id}', 'LoginController@redirect')->name('rol');
 ////ADMINISTRADOR//////
@@ -44,6 +45,7 @@ Route::get('/AdminGestion', 'AdministradorController@gestion')->name('AdminGesti
 Route::post('/AdminGestion/create', 'AdministradorController@GestionCreate');
 Route::post('/AdminGestion/edit', 'AdministradorController@gestionEditar');
 Route::get('/AdminGestion/{id}/delete','AdministradorController@gestionDelete' );
+Route::get('/CerrarGestion','AdministradorController@gestionClose' );
 
 //NIVELES
 Route::get('/AdminNivel', 'AdministradorController@nivel')->name('AdminNivel');
@@ -80,6 +82,28 @@ Route::post('/AdminAlumno/fetch', 'AdministradorController@alumnosearch')->name(
 Route::post('/paralelo/buscar', 'AdministradorController@paralelosearch')->name('paralelo.buscar');
 Route::post('/AdminInscripcion/edit', 'AdministradorController@inscripcionEditar');
 Route::get('/AdminInscripcion/{id}/delete','AdministradorController@inscripcionDelete' );
+
+//AREA
+Route::get('/AdminArea', 'AdministradorController@area')->name('AdminArea');
+Route::post('/AdminArea/create', 'AdministradorController@AreaCreate');
+Route::post('/AdminArea/edit', 'AdministradorController@areaEditar');
+Route::get('/AdminArea/{id}/delete','AdministradorController@areaDelete' );
+
+//MATERIA
+Route::get('/AdminMateria', 'AdministradorController@materia')->name('AdminMateria');
+Route::post('/AdminMateria/create', 'AdministradorController@MateriaCreate');
+Route::post('/Areas/fetch', 'AdministradorController@areasearch')->name('Areas.fetch');
+Route::post('/AdminMateria/edit', 'AdministradorController@materiaEditar');
+Route::get('/AdminMateria/{id}/delete','AdministradorController@materiaDelete' );
+
+//ASIGNAR MATERIA
+Route::get('/AdminAsignarMateria', 'AdministradorController@asignarmateria')->name('AdminAsignarMateria');
+Route::post('/AdminProfesor/fetch', 'AdministradorController@profesorsearch')->name('AdminProfesor.fetch');
+Route::post('/AdminMateria/fetch', 'AdministradorController@materiasearch')->name('AdminMateria.fetch');
+Route::post('/AdminParalelo/fetch', 'AdministradorController@paralelocomplete')->name('AdminParalelo.fetch');
+Route::post('/AdminAsignarMateria/create', 'AdministradorController@AsignarMateriaCreate');
+Route::post('/AdminAsignarMateria/edit', 'AdministradorController@AsignarMateriaEditar');
+Route::get('/AdminAsignarMateria/{id}/delete','AdministradorController@AsignarMateriaDelete' );
 
 
 Route::get('/Contador', function () { return view('Contador'); });

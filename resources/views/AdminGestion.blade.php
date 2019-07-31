@@ -4,8 +4,11 @@
 <div class="col-11" style="margin: auto;">
 
   <div class="row">
-    <div class="col-md-10 bg-primary">
-      <h3 style="text-align: center;color:#ffffff">Registro de Gestiones</h3>
+    <div class="col-md-8 bg-primary">
+      <h3 style="text-align: center;color:#ffffff;text-align: right;">Registro de Gestiones</h3>
+    </div>
+    <div class="col-md-2 bg-primary" style="text-align: right;">
+        <a href="CerrarGestion" class="btn btn-primary" style="color:#ffffff;text-decoration: none;">Cerrar Gestion</a>
     </div>
     <div class="col-md-2 bg-primary" style="text-align: right;">
         <button type="button" class="btn btn-primary icon-plus" data-toggle="modal" data-target="#new-gestion" data-toggle="tooltip" title="Agregar" id="nuevo">Registrar</button>

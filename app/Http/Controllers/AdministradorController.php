@@ -20,6 +20,14 @@ class AdministradorController extends Controller
     public function index(){
         return view('Administrador');
     }
+    //Cerrar Desactivar
+    public function gestionClose(){
+        DB::table('gestiones')->update([
+            'estado'=>'1'
+            ]
+        );
+        return back();
+    }
     //Vistas de tablas
     public function tutor(){
         $tutores = DB::table('personas')
@@ -145,6 +153,49 @@ class AdministradorController extends Controller
         )->get();
         return view('AdminInscripcion',compact('inscripciones','paralelos'));
     }
+    public function area(){
+        $areas = DB::table('areas')->get();
+        return view('AdminArea',['areas' => $areas]);
+    }
+    public function materia(){
+        $materias = DB::table('materias')
+            ->join('areas', 'areas.id', '=', 'materias.id_area')
+            ->select(
+                'materias.id as id',
+                'materias.nombre as nombre',
+                'materias.estado as estado',
+                'areas.id as idarea',
+                'areas.nombre as area'
+                )
+            ->get();
+        $areas = DB::table('areas')->get();
+        return view('AdminMateria',['materias' => $materias],['areas'=> $areas]);
+    } 
+    public function asignarmateria(){
+        $asignaciones = DB::table('asignar_materias')
+            ->join('materias', 'materias.id', '=', 'asignar_materias.id_materia')
+            ->join('profesores', 'profesores.id', '=', 'asignar_materias.id_profesores')
+            ->join('personas', 'personas.id', '=', 'profesores.id_persona')
+            ->join('curso_paralelos', 'curso_paralelos.id', '=', 'asignar_materias.id_cursos_paralelos')
+            ->join('turnos', 'turnos.id', '=', 'curso_paralelos.id_turno')
+            ->join('cursos', 'cursos.id', '=', 'curso_paralelos.id_curso')
+            ->select(
+                'asignar_materias.id as id',
+                'asignar_materias.fecha_asignacion as fecha',
+                'materias.id as idmateria',
+                'materias.nombre as nombremateria',
+                'profesores.id as idprofesor',
+                'personas.nombre as nombreprofesor',
+                'personas.apellidopat as paternoprofesor',
+                'personas.apellidomat as maternoprofesor',
+                'curso_paralelos.id as idparalelo',
+                'curso_paralelos.nombre as nombreparalelo',
+                'turnos.nombre as turno',
+                'cursos.nombre as curso'
+                )
+            ->get();
+        return view('AdminAsigMateria',compact('asignaciones'));
+    } 
     //Search
     public function tutorsearch(Request $request){
         if ($request->get('query')) {
@@ -245,6 +296,79 @@ class AdministradorController extends Controller
             echo $output;
         }
     }
+    public function areasearch(Request $request){
+        if ($request->get('query')) {
+            $query = $request->get('query');
+            $areas = DB::table('areas')->where('id','!=',$query)->get();
+            $output = ' ';
+            foreach ($areas as $area) {
+                $output .= '<option value="'.$area->id.'">'.$area->nombre.'</option>';
+            }
+            echo $output;
+        }
+    }
+
+    public function profesorsearch(Request $request){
+        if ($request->get('query')) {
+            $query = $request->get('query');
+            $data = DB::table('personas')
+                ->join('profesores', 'personas.id', '=', 'profesores.id_persona')
+                ->where([['ci', 'like', "%{$query}%"]])
+                ->orWhere([['nombre', 'like', "%{$query}%"]])
+                ->get();
+            $output = '<ul class="dropdown-menu" style="display:block; position:relative">';
+            foreach ($data as $row) {
+                $output .= '<li class="pl-1 teacher" id="'. $row->id.'"><a href="#" style="color: #1b1e21">' . $row->ci . ' - ' . $row->nombre . ' ' . $row->apellidopat . ' ' . $row->apellidomat . '</a></li>';
+            }
+            $output .= '</ul>';
+            echo $output;
+        }
+    }
+    public function materiasearch(Request $request){
+        if ($request->get('query')) {
+            $query = $request->get('query');
+            $data = DB::table('materias')
+                ->join('areas', 'areas.id', '=', 'materias.id_area')
+                ->select(
+                    'materias.id as id',
+                    'materias.nombre as materia',
+                    'areas.nombre as area'
+                )
+                ->where([['materias.nombre', 'like', "%{$query}%"]])
+                ->orWhere([['areas.nombre', 'like', "%{$query}%"]])
+                ->get();
+            $output = '<ul class="dropdown-menu" style="display:block; position:relative">';
+            foreach ($data as $row) {
+                $output .= '<li class="pl-1 materia" id="'. $row->id.'"><a href="#" style="color: #1b1e21">' . $row->materia .'</a></li>';
+            }
+            $output .= '</ul>';
+            echo $output;
+        }
+    }
+    public function paralelocomplete(Request $request){
+        if ($request->get('query')) {
+            $query = $request->get('query');
+            $data = DB::table('curso_paralelos')
+                ->join('turnos', 'turnos.id', '=', 'curso_paralelos.id_turno')
+                ->join('cursos', 'cursos.id', '=', 'curso_paralelos.id_curso')
+                ->select(
+                    'curso_paralelos.id as id',
+                    'curso_paralelos.nombre as paralelo',
+                    'turnos.nombre as turno',
+                    'cursos.nombre as curso'
+                )
+                ->where([['curso_paralelos.nombre', 'like', "%{$query}%"]])
+                ->orWhere([['cursos.nombre', 'like', "%{$query}%"]])                
+                ->get();
+            $output = '<ul class="dropdown-menu" style="display:block; position:relative">';
+            foreach ($data as $row) {
+                $output .= '<li class="pl-1 paralelo" id="'. $row->id.'"><a href="#" style="color: #1b1e21">' . $row->turno . ' - ' . $row->curso .' - ' . $row->paralelo .'</a></li>';
+            }
+            $output .= '</ul>';
+            echo $output;
+        }
+    }
+    
     //Post Crear del Admin
     public function TutorCreate(Request $request){
         DB::table('personas')->insert([
@@ -312,6 +436,7 @@ class AdministradorController extends Controller
     public function GestionCreate(Request $request){
         $inicio = $request->input('inicio');
         $fin = $request->input('fin');
+        $estado = DB::table('gestiones')->where('estado','=','0')->value('nombre');
         $date_inicio = DB::table('gestiones')->where([
             ['fecha_inicial', '<=', $inicio],
             ['fecha_final', '>=', $inicio],
@@ -373,15 +498,25 @@ class AdministradorController extends Controller
                         ->with('error_code', 1)
                         ->withInput();
                     } else {
-                        DB::table('gestiones')->insert([
-                            'nombre'=>$request->input('nombre'),
-                            'fecha_inicial'=>$request->input('inicio'),
-                            'fecha_final'=>$request->input('fin'),
-                            'descripcion'=>$request->input('descripcion'),
-                            'estado'=>'0'
-                            ]
-                        );
-                        return back();
+                        if($estado == true){
+                            $notificacion = array(
+                                'message' => 'No se puede guardar ya que existe una Gestion Abierta',
+                                'alert-type' => 'error'
+                            );
+                            return back()->with($notificacion)
+                            ->with('error_code', 1)
+                            ->withInput();
+                        }else{
+                            DB::table('gestiones')->insert([
+                                'nombre'=>$request->input('nombre'),
+                                'fecha_inicial'=>$request->input('inicio'),
+                                'fecha_final'=>$request->input('fin'),
+                                'descripcion'=>$request->input('descripcion'),
+                                'estado'=>'0'
+                                ]
+                            );
+                            return back();
+                        }
                     }
                 }
             }
@@ -434,6 +569,34 @@ class AdministradorController extends Controller
         );
         return back();
     }
+    public function AreaCreate(Request $request){
+        DB::table('areas')->insert([
+            'nombre'=>$request->input('nombre'),
+            'estado'=>'0'
+            ]
+        );
+        return back();
+    }
+    public function MateriaCreate(Request $request){
+        DB::table('materias')->insert([
+            'nombre'=>$request->input('nombre'),
+            'id_area'=>$request->input('area_id'),
+            'estado'=>'0'
+            ]
+        );
+        return back();
+    }
+    public function AsignarMateriaCreate(Request $request){
+        DB::table('asignar_materias')->insert([
+            'fecha_asignacion'=>date("Ymd"),
+            'id_materia'=>$request->input('materia_id'),
+            'id_profesores'=>$request->input('profesor_id'),
+            'id_cursos_paralelos'=>$request->input('curso_id')
+            ]
+        );
+        return back();
+    }
+
     //Post Editar Admin
     public function tutorEditar(Request $request){
         $id = $request->input('PKpersona');
@@ -447,7 +610,7 @@ class AdministradorController extends Controller
             'sexo'=>$request->input('editsexo')
             ]
         );
-    return back();
+        return back();
     }
     public function userEditar(Request $request){
         $id = $request->input('pkpersona');
@@ -467,7 +630,7 @@ class AdministradorController extends Controller
             'rude'=>$request->input('editrude')
             ]
         );
-    return back();
+        return back();
     }
     public function profesorEditar(Request $request){
         $id = $request->input('pkpersona');
@@ -481,7 +644,7 @@ class AdministradorController extends Controller
             'sexo'=>$request->input('editsexo')
             ]
         );
-    return back();
+        return back();
     }
     public function gestionEditar(Request $request){
         $id = $request->input('pkgestion');
@@ -492,7 +655,7 @@ class AdministradorController extends Controller
             'fecha_final'=>$request->input('editfin')
             ]
         );
-    return back();
+        return back();
     }
     public function nivelEditar(Request $request){
         $id = $request->input('pknivel');
@@ -500,7 +663,7 @@ class AdministradorController extends Controller
             'nombre'=>$request->input('editnombre')
             ]
         );
-    return back();
+        return back();
     }
     public function cursoEditar(Request $request){
         $id = $request->input('pkcurso');
@@ -510,7 +673,7 @@ class AdministradorController extends Controller
             'id_nivel'=>$request->input('editnivel')
             ]
         );
-    return back();
+        return back();
     }
     public function turnoEditar(Request $request){
         $id = $request->input('pkturno');
@@ -518,7 +681,7 @@ class AdministradorController extends Controller
             'nombre'=>$request->input('editnombre')
             ]
         );
-    return back();
+        return back();
     }
     public function paraleloEditar(Request $request){
         $id = $request->input('pkparalelo');
@@ -530,7 +693,7 @@ class AdministradorController extends Controller
             'cupo_maximo'=>$request->input('editcupo')
             ]
         );
-    return back();
+        return back();
     }
     public function inscripcionEditar(Request $request){
         $id = $request->input('pkinscripcion');
@@ -540,7 +703,34 @@ class AdministradorController extends Controller
             'id_alumno'=>$request->input('editalumno_id')
             ]
         );
-    return back();
+        return back();
+    }
+    public function areaEditar(Request $request){
+        $id = $request->input('pkarea');
+        DB::table('areas')->where('id', $id)->update([
+            'nombre'=>$request->input('editnombre')
+            ]
+        );
+        return back();
+    }
+    public function materiaEditar(Request $request){
+        $id = $request->input('pkmateria');
+        DB::table('materias')->where('id', $id)->update([
+            'nombre'=>$request->input('editnombre'),
+            'id_area'=>$request->input('editarea_id')
+            ]
+        );
+        return back();
+    }
+    public function AsignarMateriaEditar(Request $request){
+        $id = $request->input('pkasignar');
+        DB::table('asignar_materias')->where('id', $id)->update([
+            'id_materia'=>$request->input('editmateria_id'),
+            'id_profesores'=>$request->input('editprofesor_id'),
+            'id_cursos_paralelos'=>$request->input('editcurso_id')
+            ]
+        );
+        return back();
     }
     //DELETE
     public function tutorDelete($id)
@@ -699,5 +889,51 @@ class AdministradorController extends Controller
         }
         
     }
-    
+    public function areaDelete($id)
+    {
+        try {
+            DB::table('areas')->where('id', '=', $id)->delete();
+            return back();
+        } catch (QueryException $e) {
+            $nombre = DB::table('areas')
+            ->where('id', '=', $id)->value('nombre');
+            $notificacion = array(
+                'message' => 'No se pudo eliminar a '.$nombre,
+                'alert-type' => 'error'
+            );
+            return back()->with($notificacion);
+        }
+        
+    }
+    public function materiaDelete($id)
+    {
+        try {
+            DB::table('materias')->where('id', '=', $id)->delete();
+            return back();
+        } catch (QueryException $e) {
+            $nombre = DB::table('materias')
+            ->where('id', '=', $id)->value('nombre');
+            $notificacion = array(
+                'message' => 'No se pudo eliminar a '.$nombre,
+                'alert-type' => 'error'
+            );
+            return back()->with($notificacion);
+        }
+        
+    }
+    public function AsignarMateriaDelete($id)
+    {
+        try {
+            DB::table('asignar_materias')->where('id', '=', $id)->delete();
+            return back();
+        } catch (QueryException $e) {
+            
+            $notificacion = array(
+                'message' => 'Esta asignacion no pude ser eliminada, verifique que no este siendo usada en otro registro',
+                'alert-type' => 'error'
+            );
+            return back()->with($notificacion);
+        }
+        
+    }
 }
